@@ -13,7 +13,7 @@ export class ChildPendRequest{
         return str;
     }
     async checkIfRequestexists(randomString:string):Promise<boolean>{
-        if(await db.collection("requests").doc(randomString).get().then(doc => doc.exists))
+        if(await db.collection("request").doc(randomString).get().then(doc => doc.exists))
             return true
         else
             return false
