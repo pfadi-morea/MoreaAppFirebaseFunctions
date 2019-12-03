@@ -31,15 +31,24 @@ export class ParentPendAccept {
         }
         return await db.collection("user").doc(childUID).set(childData)
      }
+     async deleteRequest(requestString: string){
+        await db.collection("request").doc(requestString).delete()
+     }
 
     async accept(Tdata: any, context: functions.https.CallableContext) {
         const requestString: string = Tdata.request
-        const requestData: any = (await db.collection("request").doc(requestString).get()).data()
+        const rawRequest: any = await db.collection("request").doc(requestString).get()
+        if(rawRequest.exists){
+        const requestData = rawRequest.data()
         const childUserData: any = (await db.collection("user").doc(requestData.data.UID).get()).data();
         const parentUserData: any = (await db.collection("user").doc(Tdata.UID).get()).data();
+        await this.deleteRequest(requestString)
         console.log("pend parent: "+ parentUserData.UID + " and child: "+ childUserData.UID)
         await this.writeChildUserData(childUserData, parentUserData);
         return await this.writeParentUserData(childUserData, parentUserData);   
+        }
+        console.error("request wasn't generated")
+        return Promise.resolve()
     }
 
 
