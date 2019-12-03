@@ -14,15 +14,9 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-<<<<<<< HEAD
     "@google-cloud/firestore": "^2.6.0",
     "firebase-admin": "^8.0.0",
     "firebase-functions": "^3.1.0"
-=======
-    "@google-cloud/firestore": "^2.4.0",
-    "firebase-admin": "^8.0.0",
-    "firebase-functions": "^3.0.0"
->>>>>>> 2cf670f83590d3c4dac4f29fe37aaf1edb1927d4
   },
   "devDependencies": {
     "tslint": "^5.12.0",

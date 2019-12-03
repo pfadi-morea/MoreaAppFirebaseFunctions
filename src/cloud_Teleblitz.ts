@@ -38,11 +38,7 @@ export class Cloud_Teleblitz{
         return Promise.resolve()
     }
     onUpdate(oldData: any, newData: any, context: functions.EventContext):Promise<any>{
-<<<<<<< HEAD
         if(oldData.AnmeldeStatus !== newData.AnmeldeStatus){
-=======
-        if(oldData.AnmeldeStatus != newData.AnmeldeStatus){
->>>>>>> 2cf670f83590d3c4dac4f29fe37aaf1edb1927d4
             return this.signUpTeleblitzHistory(newData, context).catch((err) =>{
                 console.log("AnmeldeHistory ändern fehlgeschlagen" + err)
             })
@@ -63,7 +59,6 @@ export class Cloud_Teleblitz{
 
                 if(docSnapshot.exists){
 
-<<<<<<< HEAD
                     const oldData = docSnapshot.data()
                     const anmeldeStamp: any[] = oldData!.Anmeldung
                     let aenderung:boolean=false
@@ -72,16 +67,6 @@ export class Cloud_Teleblitz{
                     for(const i in anmeldeStamp){
                         const i2:number = parseInt(i)
                         const oldDate: Date = anmeldeStamp[i2].Timestamp.toDate()
-=======
-                    let oldData = docSnapshot!.data()
-                    let anmeldeStamp: any[] = oldData!.Anmeldung
-                    let aenderung:boolean=false
-                    let newDate: Date = newData.Timestamp.toDate()    
-
-                    for(let i in anmeldeStamp){
-                        let i2:number = parseInt(i)
-                        let oldDate: Date = anmeldeStamp[i2].Timestamp.toDate()
->>>>>>> 2cf670f83590d3c4dac4f29fe37aaf1edb1927d4
                         if(newDate < oldDate){
                             anmeldeStamp.splice(i2, 0, newData)
                             console.log("Aktivität, User: " + anmeldeUID + " " + anmeldeStamp[anmeldeStamp.length].AnmeldeStatus)
@@ -91,31 +76,18 @@ export class Cloud_Teleblitz{
                     }
 
 
-<<<<<<< HEAD
                     if(aenderung === false){
                         anmeldeStamp.push(newData)
                         console.log("Aktivität, User: " + anmeldeUID + " " + newData.AnmeldeStatus)
                     }
                     const anmeldeHistoryUpdate = {
-=======
-                    if(aenderung == false){
-                        anmeldeStamp.push(newData)
-                        console.log("Aktivität, User: " + anmeldeUID + " " + newData.AnmeldeStatus)
-                    }
-                    let anmeldeHistoryUpdate = {
->>>>>>> 2cf670f83590d3c4dac4f29fe37aaf1edb1927d4
                         "Anmeldung": anmeldeStamp
                     };
                     t.update(anmeldeHistoryRef, anmeldeHistoryUpdate)
                 }else{
 
-<<<<<<< HEAD
                     const anmeldeStamp: Map<String, any>[] = [newData]
                     const anmeldeHistory: any = {
-=======
-                    let anmeldeStamp: Map<String, any>[] = [newData]
-                    let anmeldeHistory: any = {
->>>>>>> 2cf670f83590d3c4dac4f29fe37aaf1edb1927d4
                         "Anmeldung": anmeldeStamp
                     };
                     console.log("Aktivität, User: " + anmeldeUID + " " + newData.AnmeldeStatus)
