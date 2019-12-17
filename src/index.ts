@@ -6,6 +6,7 @@ export {Cloud_Teleblitz} from './cloud_Teleblitz'
 import {ChildPendRequest} from './cloud_Functions/childPendRequest'
 export {ChildPendRequest} from './cloud_Functions/childPendRequest'
 import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
+import { Account } from './cloud_Functions/account'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -30,3 +31,7 @@ export const deleteUser = functions.firestore
           .then(() => console.log('Deleted user with ID:' + snap.id))
           .catch((error) => console.error('There was an error while deleting user:', error));
     });
+export const createAccount = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
+    const accont = new Account
+    return accont.create(data)
+})
