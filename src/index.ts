@@ -7,6 +7,7 @@ import {ChildPendRequest} from './cloud_Functions/childPendRequest'
 export {ChildPendRequest} from './cloud_Functions/childPendRequest'
 import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
+import { UserMap } from './cloud_Functions/userMap'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -34,4 +35,8 @@ export const deleteUser = functions.firestore
 export const createAccount = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const accont = new Account
     return accont.create(data)
+})
+export const uploadDevTocken = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
+    const userMap = new UserMap
+   return userMap.deviceTokenUpdate(data, context)
 })
