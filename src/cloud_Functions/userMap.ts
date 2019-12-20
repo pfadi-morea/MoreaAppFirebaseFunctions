@@ -6,17 +6,17 @@ const db = admin.firestore();
 export class UserMap{
     async deviceTokenUpdate(data:any, context: functions.https.CallableContext){
         const clientUID: string = data.UID
-        const devToken: string = data.devToken
+        const devtoken: string = data.devtoken
         let clientData: any = (await db.collection("user").doc(clientUID).get()).data()
-        if(typeof clientData.devToken === undefined){
-            clientData.devToken = [devToken]
+        if(!("devtoken" in clientData)){
+            clientData["devtoken"] = [devtoken]
         }else{
-            const devTokenArray: Array<string> = clientData.devToken
-            if(devTokenArray.includes(devToken))
+            const devtokenArray: Array<string> = clientData.devtoken
+            if(devtokenArray.includes(devtoken))
             return
 
-            devTokenArray.push(devToken)
-            clientData.devToken = devTokenArray
+            devtokenArray.push(devtoken)
+            clientData["devtoken"] = devtokenArray
         }
         return db.collection("user").doc(clientUID).set(clientData)
     }
