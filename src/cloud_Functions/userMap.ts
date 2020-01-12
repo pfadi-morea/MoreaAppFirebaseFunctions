@@ -4,6 +4,9 @@ import * as admin from 'firebase-admin'
 const db = admin.firestore();
 
 export class UserMap{
+    async update(data:any, context: functions.https.CallableContext){
+        return db.collection("user").doc(data.UID).set(data)
+    }
     async deviceTokenUpdate(data:any, context: functions.https.CallableContext){
         const clientUID: string = data.UID
         const devtoken: string = data.devtoken
@@ -20,5 +23,19 @@ export class UserMap{
         }
         return db.collection("user").doc(clientUID).set(clientData)
     }
+    async groupIDUpdate(data:any, context: functions.https.CallableContext){
+        const userUID:string = data.UID
+        const groupID:string = data.groupID
 
+        const userDocRef:FirebaseFirestore.DocumentReference = db.collection("user").doc(userUID)
+        return db.runTransaction(t =>{
+            return t.get(userDocRef).then((dSuserDoc)=>{
+                let userDoc:any = dSuserDoc.data()
+                userDoc["groupID"]= groupID
+                return t.update(userDocRef, userDoc)
+            }).catch((error)=>{
+                console.error(error)
+            })
+        })
+    }
 }
