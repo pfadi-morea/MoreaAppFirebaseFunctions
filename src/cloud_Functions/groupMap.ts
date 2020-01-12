@@ -1,11 +1,12 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
+import { UserMap } from './userMap';
 
 const db = admin.firestore();
 
 export class GroupMap{
     async priviledgeTN(data:any, context: functions.https.CallableContext){
-        const userID:string = data.userID
+        const userID:string = data.UID
         const groupID:string = data.groupID
         const displayName:string = data.displayName
 
@@ -32,7 +33,7 @@ export class GroupMap{
         })
     }
     async deSubFromGroup(data:any, context: functions.https.CallableContext){
-        const userID:string = data.userID
+        const userID:string = data.UID
         const groupID:string = data.groupID
 
         const groupRef:FirebaseFirestore.DocumentReference = db.collection("groups").doc(groupID)
@@ -51,11 +52,39 @@ export class GroupMap{
     async goToNewGroup(data:any, context: functions.https.CallableContext){
         const oldGroup:string = data.oldGroup
         const newGroup:string = data.newGroup
-
+        const userMap = new UserMap
         data.groupID = oldGroup
         await this.deSubFromGroup(data, context)
         data.groupID = newGroup
+        await userMap.groupIDUpdate(data, context)
         return this.priviledgeTN(data, context)
+    }
+    async makeLeiter(data:any, context: functions.https.CallableContext){
+        const userID:string = data.UID
+        const groupID:string = data.groupID
+        const displayName:string = data.displayName
+
+        const groupRef:FirebaseFirestore.DocumentReference = db.collection("groups").doc(groupID)
+
+        return db.runTransaction(t =>{
+            return t.get(groupRef).then((dSgroup)=>{
+                let groupData:any = dSgroup.data()
+                let priviledge:any
+                if("Priviledge" in groupData){
+                    priviledge = groupData["Priviledge"]
+                    priviledge[userID]={"DisplayName": displayName, 
+                    "Priviledge": 3}
+                }else{
+                    priviledge = {userID:{"DisplayName": displayName, 
+                    "Priviledge": 3}}
+                    groupData["Priviledge"] = priviledge
+                }
+                return t.update(groupRef, groupData)
+            }).catch((error)=>{
+                console.error(error)
+                return error
+            })
+        })
     }
 
 }
