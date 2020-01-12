@@ -48,7 +48,7 @@ export const updateUserProfile = functions.https.onCall(async (data:any, context
 
 export const goToNewGroup = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const groupMap = new GroupMap;
-    return groupMap.goToNewGroup
+    return groupMap.goToNewGroup(data, context)
 })
 export const priviledgeTN = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const groupMap = new GroupMap;
