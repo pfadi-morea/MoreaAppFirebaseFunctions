@@ -21,12 +21,7 @@ export class ChildPendRequest{
     
     async request(data:any, context: functions.https.CallableContext):Promise<String>{
         const requeststr:string =  await this.generateRequestString(20) 
-        await db.collection("request").doc(requeststr).set({data})
+        await db.collection("request").doc(requeststr).set(data)
         return requeststr
     }
-    
-    
-    
-
-
 }

@@ -8,6 +8,7 @@ export {ChildPendRequest} from './cloud_Functions/childPendRequest'
 import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
+import { Priviledge } from './cloud_Functions/priviledge'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -39,4 +40,8 @@ export const createAccount = functions.https.onCall(async (data:any, context: fu
 export const uploadDevTocken = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const userMap = new UserMap
    return userMap.deviceTokenUpdate(data, context)
+})
+export const priviledgeTN = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
+    const priviledge = new Priviledge
+   return priviledge.tNPriviledge(data,context)
 })

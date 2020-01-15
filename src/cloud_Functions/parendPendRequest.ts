@@ -40,7 +40,7 @@ export class ParentPendAccept {
         const rawRequest: any = await db.collection("request").doc(requestString).get()
         if(rawRequest.exists){
         const requestData = rawRequest.data()
-        const childUserData: any = (await db.collection("user").doc(requestData.data.UID).get()).data();
+        const childUserData: any = (await db.collection("user").doc(requestData.UID).get()).data();
         const parentUserData: any = (await db.collection("user").doc(Tdata.UID).get()).data();
         await this.deleteRequest(requestString)
         console.log("pend parent: "+ parentUserData.UID + " and child: "+ childUserData.UID)
