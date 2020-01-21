@@ -50,7 +50,7 @@ export class UserMap{
         if(rawRequest.exists){
         const requestData = rawRequest.data()
         const clientRef:FirebaseFirestore.DocumentReference =db.collection("user").doc(requestData.UID)
-        requestRef.delete()
+        requestRef.delete().catch((e) => console.error(e))
         let clientData:any
         db.runTransaction(t=>{
             return t.get(clientRef).then((clientDoc)=>{
@@ -58,7 +58,7 @@ export class UserMap{
                 clientData["Pos"] = "Leiter"
                 return t.update(clientRef, clientData)
             }).catch((err)=> console.error(err))
-        })
+        }).catch((err)=> console.error(err))
         clientData.groupID=data.groupID
         if("Pfadinamen" in clientData)
             clientData.DisplayName = clientData.Pfadinamen
