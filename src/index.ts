@@ -54,3 +54,7 @@ export const priviledgeTN = functions.https.onCall(async (data:any, context: fun
     const groupMap = new GroupMap;
     return groupMap.priviledgeTN(data, context)
 })
+export const makeLeiter = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
+    const groupMap = new GroupMap;
+    return groupMap.makeLeiter(data, context)
+})
