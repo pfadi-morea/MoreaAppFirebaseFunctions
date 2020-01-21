@@ -63,7 +63,7 @@ export class GroupMap{
     async makeLeiter(data:any, context: functions.https.CallableContext){
         const userID:string = data.UID
         const groupID:string = data.groupID
-        const displayName:string = data.displayName
+        const displayName:string = data.DisplayName
 
         const groupRef:FirebaseFirestore.DocumentReference = db.collection("groups").doc(groupID)
 

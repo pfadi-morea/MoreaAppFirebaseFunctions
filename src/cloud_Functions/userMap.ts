@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
+import { GroupMap } from './groupMap';
 
 const db = admin.firestore();
 
@@ -41,5 +42,32 @@ export class UserMap{
                 console.error(error)
             })
         })
+    }
+    async makeLeiter(data: any, context: functions.https.CallableContext) {
+        const requestString: string = data.request
+        const requestRef:FirebaseFirestore.DocumentReference = db.collection("request").doc(requestString)
+        const rawRequest: any = await requestRef.get()
+        if(rawRequest.exists){
+        const requestData = rawRequest.data()
+        const clientRef:FirebaseFirestore.DocumentReference =db.collection("user").doc(requestData.UID)
+        requestRef.delete()
+        let clientData:any
+        db.runTransaction(t=>{
+            return t.get(clientRef).then((clientDoc)=>{
+                clientData = clientDoc.data()
+                clientData["Pos"] = "Leiter"
+                return t.update(clientRef, clientData)
+            }).catch((err)=> console.error(err))
+        })
+        clientData.groupID=data.groupID
+        if("Pfadinamen" in clientData)
+            clientData.DisplayName = clientData.Pfadinamen
+        else
+            clientData.DisplayName = clientData.Vorname
+            const groupMap = new GroupMap()
+            return groupMap.makeLeiter(clientData, context)
+        }
+        console.error("request wasn't generated")
+        return Promise.resolve()
     }
 }
