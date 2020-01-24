@@ -10,6 +10,7 @@ import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
 import { GroupMap} from './cloud_Functions/groupMap'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
+import {MailChimpManager} from './cloud_Functions/mailchimp'
 
 //const db = admin.firestore();
 
@@ -57,4 +58,8 @@ export const priviledgeTN = functions.https.onCall(async (data:any, context: fun
 export const makeLeiter = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const groupMap = new GroupMap;
     return groupMap.makeLeiter(data, context)
+})
+export const mailchimp = functions.https.onCall(async (data:any, context:functions.https.CallableContext) =>{
+    const manager = new MailChimpManager
+    return manager.updateProfile(data, context)
 })
