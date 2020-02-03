@@ -9,8 +9,8 @@ import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
 import { GroupMap} from './cloud_Functions/groupMap'
+import { ChildUserMap } from './cloud_Functions/childUserMap'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
-import {MailChimpManager} from './cloud_Functions/mailchimp'
 
 //const db = admin.firestore();
 
@@ -59,7 +59,12 @@ export const makeLeiter = functions.https.onCall(async (data:any, context: funct
     const groupMap = new GroupMap;
     return groupMap.makeLeiter(data, context)
 })
-export const mailchimp = functions.https.onCall(async (data:any, context:functions.https.CallableContext) =>{
-    const manager = new MailChimpManager
-    return manager.updateProfile(data, context)
+export const createChildUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const childusermap = new ChildUserMap
+    return childusermap.create(data, context)
+})
+
+export const priviledgeEltern = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const groupMap = new GroupMap
+    return groupMap.priviledgeEltern(data, context)
 })

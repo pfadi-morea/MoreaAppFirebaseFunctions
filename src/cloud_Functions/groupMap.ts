@@ -16,7 +16,7 @@ export class GroupMap{
             return t.get(groupRef).then((dSgroup)=>{
                 let groupData:any = dSgroup.data()
                 let priviledge:any
-                if(groupData != undefined)
+                if(groupData !== undefined)
                 if("Priviledge" in groupData){
                     priviledge = groupData["Priviledge"]
                     priviledge[userID]={"DisplayName": displayName, 
@@ -78,6 +78,34 @@ export class GroupMap{
                 }else{
                     priviledge = {userID:{"DisplayName": displayName, 
                     "Priviledge": 3}}
+                    groupData["Priviledge"] = priviledge
+                }
+                return t.update(groupRef, groupData)
+            }).catch((error)=>{
+                console.error(error)
+                return error
+            })
+        })
+    }
+    async priviledgeEltern(data:any, context: functions.https.CallableContext){
+        const userID:string = data.UID
+        const groupID:string = data.groupID
+        const displayName:string = data.DisplayName
+
+        const groupRef:FirebaseFirestore.DocumentReference = db.collection("groups").doc(groupID)
+
+        return db.runTransaction(t =>{
+            return t.get(groupRef).then((dSgroup)=>{
+                let groupData:any = dSgroup.data()
+                let priviledge:any
+                if(groupData !== undefined)
+                if("Priviledge" in groupData){
+                    priviledge = groupData["Priviledge"]
+                    priviledge[userID]={"DisplayName": displayName, 
+                    "Priviledge": 2}
+                }else{
+                    priviledge = {[userID]:{"DisplayName": displayName, 
+                    "Priviledge": 2}}
                     groupData["Priviledge"] = priviledge
                 }
                 return t.update(groupRef, groupData)

@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
+import { GroupMap } from './groupMap';
 
 const db = admin.firestore();
 
@@ -45,7 +46,9 @@ export class ParentPendAccept {
         await this.deleteRequest(requestString)
         console.log("pend parent: "+ parentUserData.UID + " and child: "+ childUserData.UID)
         await this.writeChildUserData(childUserData, parentUserData);
-        return await this.writeParentUserData(childUserData, parentUserData);   
+        await this.writeParentUserData(childUserData, parentUserData);  
+        const groupMap = new GroupMap
+        return groupMap.priviledgeEltern({'UID': parentUserData.UID, 'groupID': childUserData.groupID, 'DisplayName': parentUserData.Vorname}, context)
         }
         console.error("request wasn't generated")
         return Promise.resolve()
