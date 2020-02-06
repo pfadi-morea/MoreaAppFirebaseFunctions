@@ -5,6 +5,9 @@ import { GroupMap } from './groupMap';
 const db = admin.firestore();
 
 export class UserMap{
+    async create(data:any, context: functions.https.CallableContext){
+        return db.collection("user").doc(data.UID).create(data.content)
+    }
     async update(data:any, context: functions.https.CallableContext){
         return db.collection("user").doc(data.UID).set(data)
     }
