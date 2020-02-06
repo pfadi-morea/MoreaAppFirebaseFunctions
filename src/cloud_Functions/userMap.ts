@@ -11,6 +11,9 @@ export class UserMap{
     async update(data:any, context: functions.https.CallableContext){
         return db.collection("user").doc(data.UID).set(data)
     }
+    async delete(data:any, context: functions.https.CallableContext){
+        return db.collection('user').doc(data.UID).delete()
+    }
     async deviceTokenUpdate(data:any, context: functions.https.CallableContext){
         const clientUID: string = data.UID
         const devtoken: string = data.devtoken

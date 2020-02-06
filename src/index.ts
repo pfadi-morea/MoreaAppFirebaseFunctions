@@ -72,3 +72,8 @@ export const createUserMap = functions.https.onCall(async (data:any, context: fu
     const userMap = new UserMap
     return userMap.create(data, context)
 })
+
+export const deleteUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    return userMap.delete(data, context)
+})
