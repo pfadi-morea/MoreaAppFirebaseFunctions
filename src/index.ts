@@ -68,11 +68,16 @@ export const priviledgeEltern = functions.https.onCall(async (data:any, context:
     const groupMap = new GroupMap
     return groupMap.priviledgeEltern(data, context)
 })
-export const createUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+export const upgradeChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
     const userMap = new UserMap
     console.log(data)
     console.log(data.elternList.length)
     await userMap.updateAllParents(data, context)
+    return userMap.create(data, context)
+})
+
+export const createUserMap = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
     return userMap.create(data, context)
 })
 
