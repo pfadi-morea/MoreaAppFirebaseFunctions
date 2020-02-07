@@ -13,10 +13,10 @@ export class ParentPendAccept {
         const newData = parentUserData
 
         if (typeof newData.Kinder === "undefined") {
-            newData.Kinder = { [childName]: childUID }
+            newData.Kinder = { [childUID]: childName }
         }
         else {
-            newData.Kinder[childName] = childUID
+            newData.Kinder[childUID] = childName
         }
         if (typeof newData.subscribedGroups === "undefined"){
             newData.subscribedGroups = [childUserData.groupID]
@@ -31,9 +31,9 @@ export class ParentPendAccept {
         const childUID:string = childUserData.UID
         const childData = childUserData
         if(typeof childData.Elten === "undefined"){
-            childData.Eltern = {[parentName] : parentUID}
+            childData.Eltern = {[parentUID] : parentName}
         }else{
-            childData.Eltern[parentName] = parentUID
+            childData.Eltern[parentUID] = parentName
         }
         return await db.collection("user").doc(childUID).set(childData)
      }

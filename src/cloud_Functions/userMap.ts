@@ -14,13 +14,15 @@ export class UserMap{
 
     async updateAllParents(data:any, context: functions.https.CallableContext){
         const elternList = data.elternList
+        const oldChildUID = data.oldChildUID
         for(let elternUID of elternList){
             let elternUserMap = (await db.collection('user').doc(elternUID).get()).data()
             if(elternUserMap !== undefined){
                 let elternKinderMap = elternUserMap['Kinder']
-                elternKinderMap[data.vorname] = data.UID
+                delete elternKinderMap[oldChildUID]
+                elternKinderMap[data.UID] = data.vorname
                 elternUserMap['Kinder'] = elternKinderMap
-                await db.collection('user').doc(elternUID).update(elternUserMap)
+                await db.collection('user').doc(elternUID).set(elternUserMap)
             }
         }
         return null
