@@ -29,15 +29,10 @@ export const parendPendAccept = functions.https.onCall(async (data:any, context:
 })
 export const deleteUser = functions.firestore
     .document('user/{userID}')
-    .onDelete(async (snap, context) => {
-        const test = await admin.auth().getUser(snap.id)
-        if(test !== undefined){
-            return admin.auth().deleteUser(snap.id)
+    .onDelete((snap, context) => {
+      return admin.auth().deleteUser(snap.id)
           .then(() => console.log('Deleted user with ID:' + snap.id))
           .catch((error) => console.error('There was an error while deleting user:', error));
-        } else {
-            return null
-        }
     });
 export const createAccount = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const accont = new Account
@@ -73,8 +68,42 @@ export const priviledgeEltern = functions.https.onCall(async (data:any, context:
     const groupMap = new GroupMap
     return groupMap.priviledgeEltern(data, context)
 })
+export const upgradeChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    console.log(data)
+    console.log(data.elternList.length)
+    await userMap.updateAllParents(data, context)
+    return userMap.create(data, context)
+})
 
-export const createUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+export const createUserMap = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     const userMap = new UserMap
     return userMap.create(data, context)
+})
+
+export const deleteUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    const groupMap = new GroupMap
+    await groupMap.deSubFromGroup(data, context)
+    return userMap.delete(data, context)
+})
+
+export const deleteChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    return userMap.delete(data, context)
+})
+
+export const updatePriviledge = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const groupMap = new GroupMap
+    const dataupdate = {
+        UID: data.UID,
+        groupID: data.groupID,
+        DisplayName: data.DisplayName
+    }
+    const datadesub = {
+        UID: data.oldUID,
+        groupID: data.groupID
+    }
+    await groupMap.priviledgeTN(dataupdate, context)
+    return groupMap.deSubFromGroup(datadesub, context)
 })

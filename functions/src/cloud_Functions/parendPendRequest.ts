@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from "firebase-admin"
+import * as admin from 'firebase-admin'
 import { GroupMap } from './groupMap';
 
 const db = admin.firestore();
@@ -10,13 +10,18 @@ export class ParentPendAccept {
         const childName: string = childUserData.Vorname
         const childUID: string = childUserData.UID
         const parentUID: string = parentUserData.UID
-        let newData = parentUserData
+        const newData = parentUserData
 
         if (typeof newData.Kinder === "undefined") {
-            newData.Kinder = { [childName]: childUID }
+            newData.Kinder = { [childUID]: childName }
         }
         else {
-            newData.Kinder[childName] = childUID
+            newData.Kinder[childUID] = childName
+        }
+        if (typeof newData.subscribedGroups === "undefined"){
+            newData.subscribedGroups = [childUserData.groupID]
+        } else {
+            newData.subscribedGroups.add(childUserData.groupID)
         }
         return await db.collection("user").doc(parentUID).set(newData)
     }
@@ -24,11 +29,11 @@ export class ParentPendAccept {
         const parentUID:string = parentUserData.UID;
         const parentName:string = parentUserData.Vorname;
         const childUID:string = childUserData.UID
-        let childData = childUserData
+        const childData = childUserData
         if(typeof childData.Elten === "undefined"){
-            childData.Eltern = {[parentName] : parentUID}
+            childData.Eltern = {[parentUID] : parentName}
         }else{
-            childData.Eltern[parentName] = parentUID
+            childData.Eltern[parentUID] = parentName
         }
         return await db.collection("user").doc(childUID).set(childData)
      }

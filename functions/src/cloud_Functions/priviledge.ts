@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from "firebase-admin"
+import * as admin from 'firebase-admin'
 import { DocumentReference } from '@google-cloud/firestore';
 const db = admin.firestore();
 
@@ -16,7 +16,7 @@ export class Priviledge{
                     const ddata= doc.data()
                     if(ddata !==undefined)
                     if("Priviledge" in ddata){
-                        let priviledge = doc.data()!.Priviledge
+                        const priviledge = doc.data()!.Priviledge
                         priviledge[childUID] ={"DisplayName": childDisplayName, "Priviledge": 1}
                         t.update(groupDoc, {"Priviledge" : priviledge})
                     }else{
