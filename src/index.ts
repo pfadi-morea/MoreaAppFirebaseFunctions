@@ -70,10 +70,35 @@ export const priviledgeEltern = functions.https.onCall(async (data:any, context:
 })
 export const createUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
     const userMap = new UserMap
+    console.log(data)
+    console.log(data.elternList.length)
+    await userMap.updateAllParents(data, context)
     return userMap.create(data, context)
 })
 
 export const deleteUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
     const userMap = new UserMap
+    const groupMap = new GroupMap
+    await groupMap.deSubFromGroup(data, context)
     return userMap.delete(data, context)
+})
+
+export const deleteChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    return userMap.delete(data, context)
+})
+
+export const updatePriviledge = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const groupMap = new GroupMap
+    const dataupdate = {
+        UID: data.UID,
+        groupID: data.groupID,
+        DisplayName: data.DisplayName
+    }
+    const datadesub = {
+        UID: data.oldUID,
+        groupID: data.groupID
+    }
+    await groupMap.priviledgeTN(dataupdate, context)
+    return groupMap.deSubFromGroup(datadesub, context)
 })

@@ -10,7 +10,7 @@ export class ParentPendAccept {
         const childName: string = childUserData.Vorname
         const childUID: string = childUserData.UID
         const parentUID: string = parentUserData.UID
-        let newData = parentUserData
+        const newData = parentUserData
 
         if (typeof newData.Kinder === "undefined") {
             newData.Kinder = { [childName]: childUID }
@@ -18,7 +18,7 @@ export class ParentPendAccept {
         else {
             newData.Kinder[childName] = childUID
         }
-        if (typeof newData.subscribedGroups == "undefined"){
+        if (typeof newData.subscribedGroups === "undefined"){
             newData.subscribedGroups = [childUserData.groupID]
         } else {
             newData.subscribedGroups.add(childUserData.groupID)
@@ -29,7 +29,7 @@ export class ParentPendAccept {
         const parentUID:string = parentUserData.UID;
         const parentName:string = parentUserData.Vorname;
         const childUID:string = childUserData.UID
-        let childData = childUserData
+        const childData = childUserData
         if(typeof childData.Elten === "undefined"){
             childData.Eltern = {[parentName] : parentUID}
         }else{
