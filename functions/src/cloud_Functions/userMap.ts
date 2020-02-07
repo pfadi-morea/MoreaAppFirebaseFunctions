@@ -18,11 +18,19 @@ export class UserMap{
         for(let elternUID of elternList){
             let elternUserMap = (await db.collection('user').doc(elternUID).get()).data()
             if(elternUserMap !== undefined){
-                let elternKinderMap = elternUserMap['Kinder']
-                delete elternKinderMap[oldChildUID]
-                elternKinderMap[data.UID] = data.vorname
-                elternUserMap['Kinder'] = elternKinderMap
-                await db.collection('user').doc(elternUID).set(elternUserMap)
+                const elternRef:FirebaseFirestore.DocumentReference = db.collection("user").doc(elternUID)
+                await db.runTransaction(t =>{
+                    return t.get(elternRef).then((dSgroup)=>{
+                        let groupData:any = dSgroup.data() 
+                        delete groupData["Kinder"][oldChildUID]
+                        groupData['Kinder'][data.UID] = data.vorname
+                        console.log(groupData)
+                        return t.set(elternRef, groupData)
+                     }).catch((error)=>{
+                        console.error(error)
+                        return error
+                    })
+                })
             }
         }
         return null

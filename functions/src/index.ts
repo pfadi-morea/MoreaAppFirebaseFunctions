@@ -29,10 +29,14 @@ export const parendPendAccept = functions.https.onCall(async (data:any, context:
 })
 export const deleteUser = functions.firestore
     .document('user/{userID}')
-    .onDelete((snap, context) => {
-      return admin.auth().deleteUser(snap.id)
+    .onDelete(async (snap, context) => {
+        if(snap.id.length < 25){
+            return null
+        } else {
+            return admin.auth().deleteUser(snap.id)
           .then(() => console.log('Deleted user with ID:' + snap.id))
           .catch((error) => console.error('There was an error while deleting user:', error));
+        }
     });
 export const createAccount = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const accont = new Account
