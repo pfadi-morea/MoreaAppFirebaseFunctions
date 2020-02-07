@@ -74,8 +74,6 @@ export const priviledgeEltern = functions.https.onCall(async (data:any, context:
 })
 export const upgradeChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
     const userMap = new UserMap
-    console.log(data)
-    console.log(data.elternList.length)
     await userMap.updateAllParents(data, context)
     return userMap.create(data, context)
 })

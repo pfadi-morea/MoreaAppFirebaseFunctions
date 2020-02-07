@@ -24,7 +24,6 @@ export class UserMap{
                         let groupData:any = dSgroup.data() 
                         delete groupData["Kinder"][oldChildUID]
                         groupData['Kinder'][data.UID] = data.vorname
-                        console.log(groupData)
                         return t.set(elternRef, groupData)
                      }).catch((error)=>{
                         console.error(error)
