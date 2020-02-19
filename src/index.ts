@@ -9,6 +9,8 @@ import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
 import { GroupMap} from './cloud_Functions/groupMap'
+import { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
+export { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -52,9 +54,16 @@ export const goToNewGroup = functions.https.onCall(async (data:any, context: fun
 })
 export const priviledgeTN = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const groupMap = new GroupMap;
+    const userMap = new UserMap
+    await userMap.groupIDUpdate(data, context)
     return groupMap.priviledgeTN(data, context)
 })
 export const makeLeiter = functions.https.onCall(async (data:any, context: functions.https.CallableContext)=>{
     const groupMap = new GroupMap;
     return groupMap.makeLeiter(data, context)
+})
+export const pushNotificationOnTeleblitzCreate = functions.firestore.
+document("groups/{groupID}").onWrite(async (change, context)=>{
+    const pushNotification = new PushNotificationByTeleblitzCreated
+    return pushNotification.init(change, context)
 })
