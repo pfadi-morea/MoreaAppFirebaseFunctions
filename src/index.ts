@@ -9,8 +9,12 @@ import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
 import { GroupMap} from './cloud_Functions/groupMap'
+<<<<<<< HEAD
 import { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
 export { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
+=======
+import { ChildUserMap } from './cloud_Functions/childUserMap'
+>>>>>>> 2c68a77eed536f79a129a20aa0ff2e36948dd925
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -62,8 +66,58 @@ export const makeLeiter = functions.https.onCall(async (data:any, context: funct
     const groupMap = new GroupMap;
     return groupMap.makeLeiter(data, context)
 })
+<<<<<<< HEAD
 export const pushNotificationOnTeleblitzCreate = functions.firestore.
 document("groups/{groupID}").onWrite(async (change, context)=>{
     const pushNotification = new PushNotificationByTeleblitzCreated
     return pushNotification.init(change, context)
+=======
+export const createChildUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const childusermap = new ChildUserMap
+    return childusermap.create(data, context)
+})
+
+export const priviledgeEltern = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const groupMap = new GroupMap
+    return groupMap.priviledgeEltern(data, context)
+})
+export const upgradeChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    console.log(data)
+    console.log(data.elternList.length)
+    await userMap.updateAllParents(data, context)
+    return userMap.create(data, context)
+})
+
+export const createUserMap = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    return userMap.create(data, context)
+})
+
+export const deleteUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    const groupMap = new GroupMap
+    await groupMap.deSubFromGroup(data, context)
+    return userMap.delete(data, context)
+})
+
+export const deleteChildMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const userMap = new UserMap
+    return userMap.delete(data, context)
+})
+
+export const updatePriviledge = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
+    const groupMap = new GroupMap
+    const dataupdate = {
+        UID: data.UID,
+        groupID: data.groupID,
+        DisplayName: data.DisplayName
+    }
+    const datadesub = {
+        UID: data.oldUID,
+        groupID: data.groupID
+    }
+    await groupMap.priviledgeTN(dataupdate, context)
+    return groupMap.deSubFromGroup(datadesub, context)
+>>>>>>> 2c68a77eed536f79a129a20aa0ff2e36948dd925
 })

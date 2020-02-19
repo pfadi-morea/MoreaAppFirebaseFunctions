@@ -5,16 +5,40 @@ import { GroupMap } from './groupMap';
 const db = admin.firestore();
 
 export class UserMap{
+    async create(data:any, context: functions.https.CallableContext){
+        return db.collection("user").doc(data.UID).create(data.content)
+    }
     async update(data:any, context: functions.https.CallableContext){
         return db.collection("user").doc(data.UID).set(data)
     }
+
+    async updateAllParents(data:any, context: functions.https.CallableContext){
+        const elternList = data.elternList
+        const oldChildUID = data.oldChildUID
+        for(let elternUID of elternList){
+            let elternUserMap = (await db.collection('user').doc(elternUID).get()).data()
+            if(elternUserMap !== undefined){
+                let elternKinderMap = elternUserMap['Kinder']
+                delete elternKinderMap[oldChildUID]
+                elternKinderMap[data.UID] = data.vorname
+                elternUserMap['Kinder'] = elternKinderMap
+                await db.collection('user').doc(elternUID).set(elternUserMap)
+            }
+        }
+        return null
+    }
+
+    async delete(data:any, context: functions.https.CallableContext){
+        return db.collection('user').doc(data.UID).delete()
+    }
+
     async deviceTokenUpdate(data:any, context: functions.https.CallableContext){
         const clientUID: string = data.UID
         const devtoken: string = data.devtoken
         let clientData: any = undefined
         do{
             clientData = (await db.collection("user").doc(clientUID).get()).data()
-        }while(typeof clientData == undefined)
+        }while(typeof clientData === undefined)
         
         if(!("devtoken" in clientData)){
             clientData["devtoken"] = [devtoken]
@@ -35,7 +59,7 @@ export class UserMap{
         const userDocRef:FirebaseFirestore.DocumentReference = db.collection("user").doc(userUID)
         return db.runTransaction(t =>{
             return t.get(userDocRef).then((dSuserDoc)=>{
-                let userDoc:any = dSuserDoc.data()
+                const userDoc:any = dSuserDoc.data()
                 userDoc["groupID"]= groupID
                 return t.update(userDocRef, userDoc)
             }).catch((error)=>{

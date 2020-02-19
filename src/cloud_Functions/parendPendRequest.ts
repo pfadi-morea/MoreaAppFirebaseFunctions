@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
+import { GroupMap } from './groupMap';
 
 const db = admin.firestore();
 
@@ -9,13 +10,18 @@ export class ParentPendAccept {
         const childName: string = childUserData.Vorname
         const childUID: string = childUserData.UID
         const parentUID: string = parentUserData.UID
-        let newData = parentUserData
+        const newData = parentUserData
 
         if (typeof newData.Kinder === "undefined") {
-            newData.Kinder = { [childName]: childUID }
+            newData.Kinder = { [childUID]: childName }
         }
         else {
-            newData.Kinder[childName] = childUID
+            newData.Kinder[childUID] = childName
+        }
+        if (typeof newData.subscribedGroups === "undefined"){
+            newData.subscribedGroups = [childUserData.groupID]
+        } else {
+            newData.subscribedGroups.add(childUserData.groupID)
         }
         return await db.collection("user").doc(parentUID).set(newData)
     }
@@ -23,11 +29,11 @@ export class ParentPendAccept {
         const parentUID:string = parentUserData.UID;
         const parentName:string = parentUserData.Vorname;
         const childUID:string = childUserData.UID
-        let childData = childUserData
+        const childData = childUserData
         if(typeof childData.Elten === "undefined"){
-            childData.Eltern = {[parentName] : parentUID}
+            childData.Eltern = {[parentUID] : parentName}
         }else{
-            childData.Eltern[parentName] = parentUID
+            childData.Eltern[parentUID] = parentName
         }
         return await db.collection("user").doc(childUID).set(childData)
      }
@@ -45,7 +51,9 @@ export class ParentPendAccept {
         await this.deleteRequest(requestString)
         console.log("pend parent: "+ parentUserData.UID + " and child: "+ childUserData.UID)
         await this.writeChildUserData(childUserData, parentUserData);
-        return await this.writeParentUserData(childUserData, parentUserData);   
+        await this.writeParentUserData(childUserData, parentUserData);  
+        const groupMap = new GroupMap
+        return groupMap.priviledgeEltern({'UID': parentUserData.UID, 'groupID': childUserData.groupID, 'DisplayName': parentUserData.Vorname}, context)
         }
         console.error("request wasn't generated")
         return Promise.resolve()
