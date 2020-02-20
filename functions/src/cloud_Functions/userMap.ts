@@ -145,7 +145,7 @@ export class UserMap {
                     const newField: { [key: string]: any } = {};
                     for (const device of Object.keys(field)) {
                         if (device !== deviceID) {
-                            newField.device = field.device;
+                            newField[device] = field[device];
                         }
                     }
                     if (map !== undefined) {
