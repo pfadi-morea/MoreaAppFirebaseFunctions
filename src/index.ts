@@ -9,12 +9,9 @@ import {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 import { Account } from './cloud_Functions/account'
 import { UserMap } from './cloud_Functions/userMap'
 import { GroupMap} from './cloud_Functions/groupMap'
-<<<<<<< HEAD
 import { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
 export { PushNotificationByTeleblitzCreated } from './push_notification/teleblitz_create'
-=======
 import { ChildUserMap } from './cloud_Functions/childUserMap'
->>>>>>> 2c68a77eed536f79a129a20aa0ff2e36948dd925
 export {ParentPendAccept} from './cloud_Functions/parendPendRequest'
 
 //const db = admin.firestore();
@@ -66,12 +63,16 @@ export const makeLeiter = functions.https.onCall(async (data:any, context: funct
     const groupMap = new GroupMap;
     return groupMap.makeLeiter(data, context)
 })
-<<<<<<< HEAD
 export const pushNotificationOnTeleblitzCreate = functions.firestore.
 document("groups/{groupID}").onWrite(async (change, context)=>{
     const pushNotification = new PushNotificationByTeleblitzCreated
-    return pushNotification.init(change, context)
-=======
+    return pushNotification.groupLevelInit(change, context)
+})
+export const pushNotificationOnTeleblitzWrite = functions.firestore.
+document("groups/{groupID}").onWrite(async (change, context)=>{
+    const pushNotification = new PushNotificationByTeleblitzCreated
+    return pushNotification.eventLevelInit(change)
+})
 export const createChildUserMap = functions.https.onCall(async (data:any, context: functions.https.CallableContext) => {
     const childusermap = new ChildUserMap
     return childusermap.create(data, context)
@@ -119,5 +120,4 @@ export const updatePriviledge = functions.https.onCall(async (data:any, context:
     }
     await groupMap.priviledgeTN(dataupdate, context)
     return groupMap.deSubFromGroup(datadesub, context)
->>>>>>> 2c68a77eed536f79a129a20aa0ff2e36948dd925
 })
