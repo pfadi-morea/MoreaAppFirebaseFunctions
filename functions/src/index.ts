@@ -93,7 +93,14 @@ export const pushNotificationOnTeleblitzCreate = functions.firestore
   .document("groups/{groupID}")
   .onWrite(async (change, context) => {
     const pushNotification = new PushNotificationByTeleblitzCreated();
-    return pushNotification.init(change, context);
+    return pushNotification.groupLevelInit(change, context);
+  });
+
+export const pushNotificationOnTeleblitzWrite = functions.firestore
+  .document("groups/{groupID}")
+  .onWrite(async (change, context) => {
+    const pushNotification = new PushNotificationByTeleblitzCreated();
+    return pushNotification.eventLevelInit(change);
   });
 export const createChildUserMap = functions.https.onCall(
   async (data: any, context: functions.https.CallableContext) => {

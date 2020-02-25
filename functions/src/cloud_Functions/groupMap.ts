@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { UserMap } from "./userMap";
+import { object } from "firebase-functions/lib/providers/storage";
 
 const db = admin.firestore();
 
@@ -18,7 +19,7 @@ export class GroupMap {
         }
         const groupData = snap.data();
         if (groupData == undefined) {
-          console.error("groupData is undefined --> teleblitz_create.ts");
+          console.error("groupData is undefined --> teleblitzS_create.ts");
           return arr;
         }
 
@@ -39,8 +40,7 @@ export class GroupMap {
   async getChildAndHisParentsDevTokens(
     childuserIDs: Array<string>
   ): Promise<Array<string>> {
-    var arr = new Array<string>();
-    console.log(childuserIDs);
+    let arr = new Array<string>();
     for (const i in childuserIDs) {
       const childUserID: string = childuserIDs[i];
       const child: any = await db
@@ -50,30 +50,54 @@ export class GroupMap {
       if (child.exists) {
         const childData: any = child.data();
         if ("devtoken" in childData) {
-          console.log(arr);
-          arr.push(...childData.devtoken);
+          if (
+            childData.devtoken instanceof Object ||
+            childData.devtoken instanceof object
+          )
+            arr.push(
+              ...new Array<string>(...Object.values<string>(childData.devtoken))
+            );
+          else if (childData.devtoken instanceof Array) {
+            console.error(
+              "devToken format is deprecated: " +
+                JSON.stringify(childData.devtoken) +
+                "(User: " +
+                childUserID +
+                " )"
+            );
+            arr.push(...childData.devtoken);
+          } else
+            console.error(
+              "devToken is malformed: " +
+                JSON.stringify(childData.devtoken) +
+                "(User: " +
+                childUserID +
+                " ). And has type: " +
+                typeof childData.devtoken
+            );
         } else if ("devToken" in childData) {
           arr.push(...childData.devToken);
           console.error(
             "Attention wrong key in userMap found. Change devToken to devtoken. --> groupMap.ts"
           );
         }
-        if ("Eltern" in childData)
-          arr.push(...(await this.getDeviceTokenFromChildParents(childData)));
+        if ("Eltern" in childData) {
+          const elternarr: Array<string> = new Array(
+            ...(await this.getDeviceTokenFromChildParents(childData))
+          );
+          arr.push(...elternarr);
+        }
       } else
-        console.error("child with userID: " + childUserID + "does not exists");
+        console.error("child with userID: " + childUserID + " does not exists");
     }
-    console.log(arr);
     return arr;
   }
 
   async getDeviceTokenFromChildParents(childMap: any): Promise<Array<string>> {
     var arr = new Array<string>();
     if (!("Eltern" in childMap)) return arr;
-
-    arr = new Array<string>(...Object.keys(childMap.Eltern));
-    var arr2 = new Array<string>();
-    console.log(arr);
+    arr.push(...Object.keys(childMap.Eltern));
+    var devTokenArray = new Array<string>();
     for (const i in arr) {
       const parentUserID: string = arr[i];
       const parent: any = await db
@@ -82,10 +106,36 @@ export class GroupMap {
         .get();
       if (parent.exists) {
         const parentData: any = parent.data();
-        console.log(parentData);
-        if ("devtoken" in parentData) arr2.push(...parentData.devtoken);
-        else if ("devToken" in parentData) {
-          arr2.push(...parentData.devToken);
+        if ("devtoken" in parentData) {
+          if (
+            parent.devtoken instanceof Object ||
+            parentData.devtoken instanceof object
+          )
+            devTokenArray.push(
+              ...new Array<string>(
+                ...Object.values<string>(parentData.devtoken)
+              )
+            );
+          else if (parent.devtoken instanceof Array) {
+            console.error(
+              "devToken format is deprecated: " +
+                JSON.stringify(parentData.devtoken) +
+                "(User: " +
+                parentUserID +
+                " )"
+            );
+            devTokenArray.push(...parentData.devtoken);
+          } else
+            console.error(
+              "devToken is malformed: " +
+                JSON.stringify(parentData.devtoken) +
+                "(User: " +
+                parentUserID +
+                " ). And has type: " +
+                typeof parentData.devtoken
+            );
+        } else if ("devToken" in parentData) {
+          devTokenArray.push(...parentData.devToken);
           console.error(
             "Attention wrong key in userMap found. Change devToken to devtoken. --> groupMap.ts"
           );
@@ -95,8 +145,7 @@ export class GroupMap {
           "parent with userID: " + parentUserID + " does not exists"
         );
     }
-    console.log(arr2);
-    return arr2;
+    return devTokenArray;
   }
   async priviledgeTN(data: any, context: functions.https.CallableContext) {
     const userID: string = data.UID;
