@@ -18,11 +18,6 @@ export class ParentPendAccept {
         else {
             newData.Kinder[childUID] = childName
         }
-        if (typeof newData.subscribedGroups === "undefined"){
-            newData.subscribedGroups = [childUserData.groupID]
-        } else {
-            newData.subscribedGroups.add(childUserData.groupID)
-        }
         return await db.collection("user").doc(parentUID).set(newData)
     }
      async writeChildUserData(childUserData:any, parentUserData:any){
