@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "dev-pfadi-morea"
+    "release": "pfadi-morea",
+    "dev": "dev-pfadi-morea"
   }
 }

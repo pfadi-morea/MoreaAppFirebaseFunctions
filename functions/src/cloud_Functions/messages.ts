@@ -46,7 +46,7 @@ export class Messages {
         const message = {
             notification: { title: title, body: snippet },
             priority: "high",
-            data: { click_action: "FLUTTER_NOTIFICATION_CLICK" },
+            data: { click_action: "FLUTTER_NOTIFICATION_CLICK", typeMorea: 'Message' },
             tokens: registrationTokens
         };
         console.log(registrationTokens);
