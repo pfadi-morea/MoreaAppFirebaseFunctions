@@ -142,6 +142,13 @@ export const deleteUserMap = functions.region("europe-west1").https.onCall(
     }
 );
 
+export const desubFromGroup = functions.region("europe-west1").https.onCall(
+    async (data: any, context: functions.https.CallableContext) => {
+        const groupMap = new GroupMap();
+        return groupMap.deSubFromGroup(data, context)
+    }
+)
+
 export const deleteChildMap = functions.region("europe-west1").https.onCall(
     async (data: any, context: functions.https.CallableContext) => {
         const userMap = new UserMap();
