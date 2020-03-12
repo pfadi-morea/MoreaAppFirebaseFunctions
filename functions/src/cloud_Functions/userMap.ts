@@ -144,9 +144,9 @@ export class UserMap {
                         }
                     }
                     if (map !== undefined) {
-                        map.devtoken = newField;
-                    }
-                    return t.set(ref, map);
+                        return
+                    }else
+                    return t.set(ref, map!);
                 })
                 .catch(err => console.error(err));
         }).catch(err => console.error(err));
