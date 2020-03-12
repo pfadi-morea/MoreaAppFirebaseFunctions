@@ -96,39 +96,34 @@ export class UserMap {
         });
     }
     async makeLeiter(data: any, context: functions.https.CallableContext) {
-        const requestString: string = data.request;
-        const requestRef: FirebaseFirestore.DocumentReference = db
-            .collection("request")
-            .doc(requestString);
-        const rawRequest: any = await requestRef.get();
-        if (rawRequest.exists) {
-            const requestData = rawRequest.data();
-            const clientRef: FirebaseFirestore.DocumentReference = db
-                .collection("user")
-                .doc(requestData.UID);
-            requestRef.delete().catch(e => console.error(e));
-            let clientData: any;
-            db.runTransaction(t => {
-                return t
-                    .get(clientRef)
-                    .then(clientDoc => {
-                        clientData = clientDoc.data();
-                        clientData["Pos"] = "Leiter";
-                        return t.update(clientRef, clientData);
-                    })
-                    .catch(err => console.error(err));
-            }).catch(err => console.error(err));
-            clientData.groupID = data.groupID;
-            if ("Pfadinamen" in clientData)
-                clientData.DisplayName = clientData.Pfadinamen;
-            else clientData.DisplayName = clientData.Vorname;
-            const groupMap = new GroupMap();
-            return groupMap.makeLeiter(clientData, context);
-        }
-        console.error("request wasn't generated");
-        return Promise.resolve();
-    }
+        const requestString: string = data.request
+        const requestRef:FirebaseFirestore.DocumentReference = db.collection("request").doc(requestString)
+        const rawRequest: any = await requestRef.get()
 
+        if(rawRequest.exists){
+        const requestData = rawRequest.data()
+        const clientRef:FirebaseFirestore.DocumentReference =db.collection("user").doc(requestData.UID)
+        requestRef.delete().catch((e) => console.error(e))
+        let clientData:any
+        await db.runTransaction(t=>{
+            return t.get(clientRef).then((clientDoc)=>{
+                clientData = clientDoc.data()
+                clientData["Pos"] = "Leiter"
+                return t.update(clientRef, clientData)
+            }).catch((err)=> console.error(err))
+        }).catch((err)=> console.error(err))
+        clientData["groupID"]=data["groupID"]
+        if("Pfadinamen" in clientData)
+            clientData.DisplayName = clientData.Pfadinamen
+        else
+            clientData.DisplayName = clientData.Vorname
+
+            const groupMap = new GroupMap()
+            return groupMap.makeLeiter(clientData, context)
+        }
+        console.error("request wasn't generated")
+        return Promise.resolve()
+    }
     async deactivateDeviceNotification(
         data: any,
         context: functions.https.CallableContext
@@ -149,9 +144,9 @@ export class UserMap {
                         }
                     }
                     if (map !== undefined) {
-                        map.devtoken = newField;
-                    }
-                    return t.set(ref, map);
+                        return
+                    }else
+                    return t.set(ref, map!);
                 })
                 .catch(err => console.error(err));
         }).catch(err => console.error(err));
