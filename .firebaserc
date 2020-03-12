@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "release": "pfadi-morea",
+    "dev": "dev-pfadi-morea"
+  }
+}
