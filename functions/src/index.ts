@@ -16,7 +16,7 @@ import { Messages } from "./cloud_Functions/messages";
 export { ParentPendAccept } from "./cloud_Functions/parendPendRequest";
 
 //const db = admin.firestore();
-
+//Changed from Imac
 export const anmeldungTeleblitz = functions.region("europe-west1").firestore
     .document("events/{eventID}/Anmeldungen/{anmeldeUID}")
     .onWrite(async (change, context) => {
