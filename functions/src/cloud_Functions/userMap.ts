@@ -145,7 +145,7 @@ export class UserMap {
                     }
                     if (map !== undefined) {
                         return
-                    }else
+                    }
                     return t.set(ref, map!);
                 })
                 .catch(err => console.error(err));
