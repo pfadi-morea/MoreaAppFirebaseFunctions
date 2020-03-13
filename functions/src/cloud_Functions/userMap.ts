@@ -130,6 +130,7 @@ export class UserMap {
     data: any,
     context: functions.https.CallableContext
   ) {
+    console.log("started");
     const uid: string = data.uid;
     const deviceID: string = data.deviceID;
     const ref: DocumentReference = db.collection("user").doc(uid);
@@ -146,12 +147,13 @@ export class UserMap {
               newField[device] = field[device];
             }
           }
-          console.log(newField)
+          console.log(newField);
           if (map !== undefined) {
-            return null;
-          } else {
-              console.log(map)
+            map["devtoken"] = newField;
+            console.log(map);
             return t.set(ref, map);
+          } else {
+            return null;
           }
         })
         .catch(err => console.error(err));
