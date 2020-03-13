@@ -88,8 +88,8 @@ export const priviledgeTN = db.https.onCall(
 );
 export const makeLeiter = db.https.onCall(
     async (data: any, context: functions.https.CallableContext) => {
-        const groupMap = new GroupMap();
-        return groupMap.makeLeiter(data, context);
+        const userMap = new UserMap();
+        return userMap.makeLeiter(data, context);
     }
 );
 export const pushNotificationOnTeleblitzCreate = db.firestore
