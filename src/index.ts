@@ -69,7 +69,7 @@ document("groups/{groupID}").onWrite(async (change, context)=>{
     return pushNotification.groupLevelInit(change, context)
 })
 export const pushNotificationOnTeleblitzWrite = functions.firestore.
-document("events/{groupID}").onWrite(async (change, context)=>{
+document("events/{eventID}").onWrite(async (change, context)=>{
     const pushNotification = new PushNotificationByTeleblitzCreated
     return pushNotification.eventLevelInit(change)
 })
