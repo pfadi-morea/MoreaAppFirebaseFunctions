@@ -37,36 +37,34 @@ export class PushNotificationByTeleblitzCreated {
   async eventLevelInit(
     change: functions.Change<FirebaseFirestore.DocumentSnapshot>
   ) {
-    if (change.before.exists && change.after.exists) {
-      const data: any = change.after.data()!;
-      if ("groupIDs" in data) {
-        const groupIDs: Array<string> = data.groupIDs;
-        const messageTitle: string = "Teleblitz";
-        const messageBody: string =
-          "Der Teleblitz wurde geändert. Schaue ihn nochmals an.";
-        const payload = {
+    //Test if Teleblitz is new or got deleted
+        if(!(change.before.exists && change.after.exists))
+           return console.log("PushNotificationOnTeleblitzWrite: event was created or deleted. Aborting Notification")
+       
+       const data:any = change.after.data()!
+  
+       //Test if field "groupIDs exists"
+       if(!("groupIDs" in data))
+            return console.error("PushNotificationOnTeleblitzWrite: groupIDs isn't specified. Aborting Notification")
+        
+       const groupIDs:Array<string> = data.groupIDs
+       const messageTitle:string = "Teleblitz"
+       const messageBody:string = "Der Teleblitz wurde geÃ¤ndert. Schaue ihn nochmals an."
+       const payload = {
           notification: {
-            title: messageTitle,
-            body: messageBody
-          }
-        };
-        const groupMap = new GroupMap();
+               title: messageTitle,
+                body: messageBody
+             }
 
-        groupIDs.forEach(async groupID => {
-          const devToken: Array<string> = await groupMap.getChildAndHisParentsDevTokens(
-            await groupMap.getPriviledgeUsers(groupID)
-          );
-          console.log(
-            "Send Teleblitz message to groupID: " +
-              groupID +
-              "devtokens: " +
-              JSON.stringify(devToken)
-          );
+                }
+        const groupMap = new GroupMap;
+        
+       return groupIDs.forEach(async groupID =>{
+          const devToken:Array<string> = await groupMap.getChildAndHisParentsDevTokens(await groupMap.getPriviledgeUsers(groupID))
+           console.log("Send Teleblitz message to groupID: " +groupID  + "devtokens: " + JSON.stringify(devToken))
 
-          return this.send(devToken, payload);
-        });
-      }
-    }
+           return this.send(devToken, payload)
+       })   
   }
   validate(
     change: functions.Change<FirebaseFirestore.DocumentSnapshot>,
