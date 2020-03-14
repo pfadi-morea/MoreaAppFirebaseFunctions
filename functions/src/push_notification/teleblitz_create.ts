@@ -38,14 +38,19 @@ export class PushNotificationByTeleblitzCreated {
     change: functions.Change<FirebaseFirestore.DocumentSnapshot>
   ) {
     //Test if Teleblitz is new or got deleted
-        if(!(change.before.exists && change.after.exists))
-           return console.log("PushNotificationOnTeleblitzWrite: event was created or deleted. Aborting Notification")
+        if(!(change.before.exists && change.after.exists)){
+          console.log("PushNotificationOnTeleblitzWrite: event was created or deleted. Aborting Notification")
+          return 
+        }
+           
        
        const data:any = change.after.data()!
   
        //Test if field "groupIDs exists"
-       if(!("groupIDs" in data))
-            return console.error("PushNotificationOnTeleblitzWrite: groupIDs isn't specified. Aborting Notification")
+       if(!("groupIDs" in data)){
+          console.error("PushNotificationOnTeleblitzWrite: groupIDs isn't specified. Aborting Notification")
+          return
+       }
         
        const groupIDs:Array<string> = data.groupIDs
        const messageTitle:string = "Teleblitz"
@@ -59,12 +64,13 @@ export class PushNotificationByTeleblitzCreated {
                 }
         const groupMap = new GroupMap;
         
-       return groupIDs.forEach(async groupID =>{
+        groupIDs.forEach(async groupID =>{
           const devToken:Array<string> = await groupMap.getChildAndHisParentsDevTokens(await groupMap.getPriviledgeUsers(groupID))
-           console.log("Send Teleblitz message to groupID: " +groupID  + "devtokens: " + JSON.stringify(devToken))
+           console.log("Send Teleblitz message to groupID: " +groupID  + " devtokens: " + JSON.stringify(devToken))
 
-           return this.send(devToken, payload)
-       })   
+              this.send(devToken, payload).catch(e=> console.error(e))
+       })
+       return   
   }
   validate(
     change: functions.Change<FirebaseFirestore.DocumentSnapshot>,
@@ -118,6 +124,6 @@ export class PushNotificationByTeleblitzCreated {
   }
 
   async send(devToken: Array<string>, payload: any) {
-    return notification.sendToDevice(devToken, payload);
+    return notification.sendToDevice(devToken.filter(element => element != null), payload);
   }
 }
